@@ -18,12 +18,4 @@ public class SurfaceCollisionDetector : MonoBehaviour
             PlayerController.isGrounded = false;
         }
     }
-
-    private void Update()
-    {
-        if (PlayerController.isGrounded == true)
-        {
-            PlayerController.extraJumps = 1;
-        }
-    }
 }

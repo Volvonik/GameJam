@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Build;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    BoxCollider2D col;
+    BoxCollider2D boxCol;
+    CircleCollider2D circleCol;
     Rigidbody2D rb;
 
     int colContidion = 0;
@@ -25,12 +27,12 @@ public class PlayerController : MonoBehaviour
     public float velocityChangeDelay = .6f;
 
     public static bool isGrounded = false;
-    public static float extraJumps = 1;
+    bool isJumping = false;
 
     void Start()
     {
-        col = gameObject.GetComponent<BoxCollider2D>();
-        
+        boxCol = gameObject.GetComponent<BoxCollider2D>();
+        circleCol = gameObject.GetComponent<CircleCollider2D>();
         rb = gameObject.GetComponent<Rigidbody2D>();
     }
 
@@ -47,31 +49,35 @@ public class PlayerController : MonoBehaviour
         {
             Flip();
         }
+
+        if (isJumping == true && isGrounded == true) 
+        {
+            rb.velocity = Vector2.up * jumpForce;
+            Invoke("DownVelocity", velocityChangeDelay);
+
+            isJumping = false;
+        }
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown("space") && extraJumps > 0)
+        if (Input.GetKeyDown("space") && isGrounded == true)
         {
-            rb.velocity = Vector2.up * jumpForce;
-            extraJumps --;
-        }
-        else if (Input.GetKeyDown("space") && extraJumps == 0 && isGrounded == true)
-        {
-            rb.velocity = Vector2.up * jumpForce;
-            Invoke("DownVelocity", velocityChangeDelay);
+            isJumping = true;
         }
 
         if (Input.GetKeyDown("s") || Input.GetKeyDown("left ctrl"))
         {
             if (colContidion % 2 == 0)
             {
-                col.enabled = false;
+                boxCol.enabled = false;
+                circleCol.enabled = false;
                 colContidion++;
             }
             else if (colContidion % 2 == 1)
             {
-                col.enabled = true;
+                boxCol.enabled = true;
+                circleCol.enabled = true;
                 colContidion++;
             }          
         }
@@ -87,7 +93,7 @@ public class PlayerController : MonoBehaviour
 
     void DownVelocity()
     {
-        rb.velocity = Vector2.down * downJumpForce;
+        rb.velocity += Vector2.down * downJumpForce;
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -99,7 +105,8 @@ public class PlayerController : MonoBehaviour
             rb.velocity = new Vector2 (0, 0);
 
             colContidion = 0;
-            col.enabled = true;
+            boxCol.enabled = true;
+            circleCol.enabled = true;
         }
     }
 }
