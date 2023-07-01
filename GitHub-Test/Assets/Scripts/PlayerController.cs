@@ -13,7 +13,6 @@ public class PlayerController : MonoBehaviour
 
     public GameObject spawner;
 
-
     public float minSpeed = 10f;
     public float moveSpeed = 10f;
     public float maxSpeed = 13f;
